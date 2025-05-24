@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('forum_topics', function (Blueprint $table) {
+        Schema::create('verification_requests', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('content');
-            $table->unsignedBigInteger('user_id');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('phone');
+            $table->string('region');
             $table->timestamps();
-    
-            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('forum_topics');
+        Schema::dropIfExists('verification_requests');
     }
 };

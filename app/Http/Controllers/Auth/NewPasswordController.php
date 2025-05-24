@@ -7,15 +7,16 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Password as PasswordFacade; // alias do resetu haseł
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules;
-use Illuminate\View\View;
+// reguły dla haseł
+use Illuminate\View\View; // do tworzenia instancji Validator
 
 class NewPasswordController extends Controller
 {
     /**
-     * Display the password reset view.
+     * Wyświetla formularz resetu hasła.
      */
     public function create(Request $request): View
     {
@@ -23,22 +24,22 @@ class NewPasswordController extends Controller
     }
 
     /**
-     * Handle an incoming new password request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * Obsługuje zapis nowego hasła.
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        // Tworzymy instancję walidatora
+        $validator = Validator::make($request->all(), [
             'token' => ['required'],
             'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->letters()->numbers()->symbols()->uncompromised()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
-        $status = Password::reset(
+        // Walidujemy z użyciem worka updatePassword:
+        $validator->validateWithBag('updatePassword');
+
+        // Jeśli walidacja się powiedzie, przystępujemy do resetu hasła:
+        $status = PasswordFacade::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user) use ($request) {
                 $user->forceFill([
@@ -50,12 +51,15 @@ class NewPasswordController extends Controller
             }
         );
 
-        // If the password was successfully reset, we will redirect the user back to
-        // the application's home authenticated view. If there is an error we can
-        // redirect them back to where they came from with their error message.
-        return $status == Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        // Jeżeli reset przebiegł pomyślnie:
+        if ($status === PasswordFacade::PASSWORD_RESET) {
+            return redirect()->route('login')
+                ->with('status', __($status));
+        }
+
+        // W przeciwnym razie odsyłamy z powrotem i wyświetlamy komunikat:
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => __($status)]);
     }
 }
