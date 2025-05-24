@@ -19,12 +19,12 @@ class VerificationRequestController extends Controller
             $hoursSince = $updatedAt ? now()->diffInHours($updatedAt) : 0;
             $daysLeft = max(0, 7 - ceil($hoursSince / 24));
 
-            // Wniosek może być złożony, jeśli status = 'rejected' i minęło >= 7 dni
+            // Warunek złożenia wniosku
             if ($lastRequest->status === 'rejected' && $daysLeft <= 0) {
                 $canResubmit = true;
             }
         } else {
-            // Brak wniosku => można złożyć
+            
             $canResubmit = true;
         }
 
@@ -41,12 +41,12 @@ class VerificationRequestController extends Controller
     {
         $lastRequest = VerificationRequest::where('user_id', Auth::id())->latest()->first();
 
-        // Obliczamy logikę jedną metodą
+        
         $info = $this->checkResubmitStatus($lastRequest);
         $canResubmit = $info['canResubmit'];
         $daysLeft = $info['daysLeft'];
 
-        // Status i kolor
+        
         $status = $lastRequest ? $lastRequest->status : null;
         $statusTranslations = [
             'approved' => 'Zaakceptowany',
@@ -75,7 +75,7 @@ class VerificationRequestController extends Controller
     {
         $lastRequest = VerificationRequest::where('user_id', Auth::id())->latest()->first();
 
-        // Używamy tej samej logiki, co w create()
+        
         $info = $this->checkResubmitStatus($lastRequest);
         if (! $info['canResubmit']) {
             return redirect()->route('welcome')
@@ -90,10 +90,10 @@ class VerificationRequestController extends Controller
             'attachments.*' => ['nullable', 'file', 'mimes:jpg,png,pdf', 'max:2048'],
         ]);
 
-        // Oznaczamy stare wnioski jako old
+        // Oznaczanie stare wnioski jako old
         VerificationRequest::where('user_id', Auth::id())->update(['status' => 'old']);
 
-        // Tworzymy nowy wniosek
+        // Tworzenie nowy wniosek
         $verification = VerificationRequest::create([
             'user_id' => Auth::id(),
             'first_name' => $request->first_name,

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('verification_files', function (Blueprint $table) {
             $table->id();
             $table->foreignId('verification_request_id')->constrained()->onDelete('cascade');
-            $table->string('path'); // Przechowywanie ścieżki pliku
+            $table->string('path'); 
             $table->timestamps();
         });
     }

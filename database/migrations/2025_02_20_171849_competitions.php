@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('competitions', function (Blueprint $table) {
             $table->id();
-            $table->string('title'); // Nazwa zawodów
-            $table->text('description'); // Opis zawodów
-            $table->date('date'); // Data zawodów
-            $table->string('location'); // Lokalizacja
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade'); // Użytkownik, który dodał zawody
+            $table->string('title'); 
+            $table->text('description'); 
+            $table->date('date'); 
+            $table->string('location'); 
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade'); 
             $table->timestamps();
         });
     }

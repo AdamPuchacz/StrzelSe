@@ -35,7 +35,7 @@ class NewPasswordController extends Controller
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->letters()->numbers()->symbols()->uncompromised()],
         ]);
 
-        // Walidujemy z użyciem worka updatePassword:
+        // Walidujemy z użyciem updatePassword:
         $validator->validateWithBag('updatePassword');
 
         // Jeśli walidacja się powiedzie, przystępujemy do resetu hasła:
@@ -57,7 +57,7 @@ class NewPasswordController extends Controller
                 ->with('status', __($status));
         }
 
-        // W przeciwnym razie odsyłamy z powrotem i wyświetlamy komunikat:
+        
         return back()
             ->withInput($request->only('email'))
             ->withErrors(['email' => __($status)]);

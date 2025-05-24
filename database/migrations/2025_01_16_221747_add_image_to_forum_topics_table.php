@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('forum_topics', function (Blueprint $table) {
-            $table->string('image')->nullable(); // Ścieżka do przesłanego obrazu
+            $table->string('image')->nullable();
         });
     }
 

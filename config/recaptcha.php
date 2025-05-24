@@ -24,7 +24,7 @@ return [
      * The secret key
      * get secret key @ www.google.com/recaptcha/admin
      */
-    'api_secret_key' => env('RECAPTCHA_SECRET_KEY', '6LfupvoqAAAAAF_Es-a8-H3A6pQJfaRsNpkO29z2'),
+    'api_secret_key' => env('RECAPTCHA_SECRET_KEY', 'xxx'),
 
     /**
      * ReCATCHA version

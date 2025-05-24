@@ -26,7 +26,7 @@ class CompetitionController extends Controller
             ->orderBy('date', 'asc')
             ->get();
 
-        // Archiwalne zawody
+        // Archiwalne
         $archivedCompetitions = Competition::whereDate('date', '<', $today)
             ->orderBy('date', 'desc')
             ->get();
@@ -35,14 +35,14 @@ class CompetitionController extends Controller
     }
 
     /**
-     * Wyświetla szczegóły wybranych zawodów (publiczne).
+     * Wyświetla szczegóły wybranych zawodów dla wszystkich userów
      */
     public function show(Competition $competition)
     {
         // Wczytanie relacji uczestników
         $competition->load('participants');
 
-        // Czy zawody są już archiwalne?
+        // Czy są archiwalne
         $isArchived = Carbon::parse($competition->date)->isPast();
         $participantCount = $isArchived ? $competition->participants()->count() : null;
 
@@ -87,7 +87,7 @@ class CompetitionController extends Controller
             'date.after_or_equal' => 'Zawody muszą być zaplanowane co najmniej z 2-dniowym wyprzedzeniem.',
         ]);
 
-        // Obsługa obrazu (opcjonalnego)
+        // Obsługa obrazu
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('competition_images', 'public');
         } else {
@@ -118,7 +118,7 @@ class CompetitionController extends Controller
             return redirect()->route('login')->with('error', 'Musisz być zalogowany, aby zapisać się na zawody.');
         }
 
-        // Sprawdzenie, czy zawody zaczynają się za mniej niż 24 godziny
+        
         if (Carbon::now()->addDay()->greaterThanOrEqualTo(Carbon::parse($competition->date))) {
             return redirect()->route('shooting-competitions.show', $competition)
                 ->with('error', 'Zapisy na te zawody zostały zamknięte.');
@@ -174,7 +174,7 @@ class CompetitionController extends Controller
     }
 
     /**
-     * Pobieranie raportu uczestników zawodów w formacie CSV (dla admina i twórcy zawodów).
+     * Pobieranie raportu uczestników
      */
     public function downloadReport(Competition $competition)
     {

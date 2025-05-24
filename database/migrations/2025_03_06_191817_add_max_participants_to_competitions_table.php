@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('competitions', function (Blueprint $table) {
-            $table->integer('max_participants')->nullable()->after('location'); // Pozwala na brak limitu
+            $table->integer('max_participants')->nullable()->after('location');
         });
     }
 

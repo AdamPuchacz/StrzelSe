@@ -9,7 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable; // Dodaj HasApiTokens
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -48,7 +48,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Relacja wiele-do-wielu z zawodami (Competition).
+     * Relacja wiele-do-wielu z zawodami
      */
     public function competitions()
     {
@@ -57,24 +57,24 @@ class User extends Authenticatable
     }
 
     /**
-     * Metoda pomocnicza do sprawdzania roli użytkownika.
+     * Metoda pomocnicza do sprawdzania roli.
      */
     public function hasRole($roles): bool
     {
-        // Pobierz rolę użytkownika i upewnij się, że nie ma błędnych spacji
+        
         $userRole = trim($this->role);
 
-        // Jeśli sprawdzamy wiele ról, użyj in_array()
+        
         if (is_array($roles)) {
             return in_array($userRole, $roles, true);
         }
 
-        // Sprawdź pojedynczą rolę
+        
         return $userRole === $roles;
     }
 
     /**
-     * Sprawdza, czy użytkownik jest adminem lub zweryfikowanym użytkownikiem.
+     * Sprawdza roli.
      */
     public function isVerifiedOrAdmin(): bool
     {

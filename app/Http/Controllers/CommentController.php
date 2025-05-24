@@ -51,7 +51,7 @@ class CommentController extends Controller
     }
 
     /**
-     * Aktualizacja komentarza z oznaczeniem edytowania.
+     * Aktualizacja komentarza z oznaczeniem
      */
     public function update(Request $request, Comment $comment)
     {
@@ -73,7 +73,7 @@ class CommentController extends Controller
             $comment->save();
         }
 
-        // Aktualizacja treści komentarza i oznaczenie jako edytowane
+        
         $comment->update(array_merge($validated, ['is_edited' => true]));
 
         return redirect()->route('topics.show', $comment->topic)->with('success', 'Komentarz został zaktualizowany.');
@@ -87,7 +87,7 @@ class CommentController extends Controller
     }
 
     /**
-     * Usuwanie komentarza z oznaczeniem kto usunął.
+     * Usuwanie komentarza
      */
     public function destroy(Comment $comment)
     {
@@ -100,14 +100,13 @@ class CommentController extends Controller
         $deletedBy = (Auth::user()->hasRole('moderator') || Auth::user()->hasRole('admin')) ? 'moderator' : 'author';
         $comment->update(['deleted_by' => $deletedBy]);
 
-        // soft delete
         $comment->delete();
 
         return redirect()->route('topics.show', $comment->topic)->with('success', 'Komentarz został usunięty.');
     }
 
     /**
-     * Usuwa obraz powiązany z komentarzem.
+     * Usuwanie obrazu powiązany z komentarzem.
      */
     private function deleteImage($imagePath)
     {

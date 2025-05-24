@@ -34,7 +34,7 @@ class CategoryController extends Controller
     }
 
     /**
-     * Aktualizuje post (tytuł, treść) i obsługuje obraz (usuwa lub podmienia).
+     * Aktualizuje post
      */
     public function updateTopic(Request $request, Category $category, ForumTopic $topic)
     {
@@ -46,13 +46,13 @@ class CategoryController extends Controller
             'image' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        // Obsługa usunięcia obrazu, jeśli użytkownik zaznaczy checkbox
+        // Obsługa usunięcia obrazu
         if ($request->input('delete_image') == '1' && $topic->image) {
             $this->deleteImage($topic->image);
             $topic->update(['image' => null]);
         }
 
-        // Jeśli w formularzu edycji przesłano nowy plik 'image'
+        
         if ($request->hasFile('image')) {
             // Najpierw usuwamy stary plik, jeśli istniał i nie został już usunięty
             if ($topic->image) {
@@ -64,7 +64,7 @@ class CategoryController extends Controller
             $validated['image'] = 'storage/'.$newPath;
         }
 
-        // Aktualizacja posta (dodajemy is_edited)
+        // Aktualizacja posta
         $topic->update(array_merge(
             $validated,
             ['is_edited' => true]
@@ -84,7 +84,7 @@ class CategoryController extends Controller
             $this->deleteImage($topic->image);
         }
 
-        // Oznaczenie kto usuwa post (autor lub moderator/admin)
+        // Oznaczenie kto usuwa post
         $deletedBy = (Auth::user()->hasRole('moderator') || Auth::user()->hasRole('admin'))
             ? 'moderator'
             : 'author';
@@ -100,8 +100,7 @@ class CategoryController extends Controller
      */
     private function deleteImage($imagePath)
     {
-        // W bazie mamy np. 'storage/topic_images/plik.jpg'
-        // Usuwamy prefiks 'storage/', by zostało 'topic_images/plik.jpg'
+        
         $publicPath = str_replace('storage/', '', $imagePath);
 
         if (Storage::disk('public')->exists($publicPath)) {
